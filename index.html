@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YOH-TECH Corp.</title>
+  <meta name="description" content="YOH-TECH Corp. — iOSアプリを中心にプロダクトを開発しています。" />
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <div class="bg-glow"></div>
+  <div class="bg-grid"></div>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a href="./" class="logo">
+        <span class="logo-mark" aria-hidden="true"></span>
+        YOH-TECH Corp.
+        <small>Studio</small>
+      </a>
+      <nav class="main-nav">
+        <a href="#apps">アプリ</a>
+        <a href="#about">About</a>
+        <a href="support/">サポート</a>
+        <a href="#contact">お問い合わせ</a>
+      </nav>
+      <button class="nav-toggle" aria-label="メニューを開く">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M2 4.5H16M2 9H16M2 13.5H16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <div class="eyebrow reveal">
+          <span class="dot"></span>
+          iOS App Developer
+        </div>
+        <h1 class="reveal delay-1">つくるを、たのしく。<br />丁寧に磨く、小さなアプリ。</h1>
+        <p class="lead reveal delay-2">
+          YOH-TECH Corp.は、日々の体験を少し良くするiOSアプリを開発しています。
+          シンプルで使いやすいプロダクトづくりを大切にしています。
+        </p>
+        <div class="hero-actions reveal delay-3">
+          <a href="#apps" class="btn btn-primary">アプリを見る</a>
+          <a href="support/" class="btn btn-ghost">サポートページへ</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="apps">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="kicker">Apps</span>
+          <h2>開発に携わったアプリ</h2>
+        </div>
+        <div class="card-grid">
+          <div class="card">
+            <div class="app-icon"><img src="assets/img/apps/fx-lot-icon.jpg" alt="FX Lot 計算機 アイコン" /></div>
+            <span class="tag">iOS App</span>
+            <h3>FX Lot 計算機</h3>
+            <p>
+              通貨ペアとリスク許容度に応じて、適正なロット数を素早く計算できるツールです。
+              Bitpark株式会社より提供されています。
+            </p>
+            <div class="card-actions">
+              <a href="https://apps.apple.com/jp/app/fx-lot-size-calculator/id1374354253" class="btn btn-primary btn-sm" target="_blank" rel="noopener">App Storeで見る</a>
+              <a href="support/fx-lot/" class="btn btn-ghost btn-sm">サポート</a>
+            </div>
+          </div>
+          <div class="card">
+            <div class="app-icon"><img src="assets/img/apps/okurinko-icon.jpg" alt="おくりん子 アイコン" /></div>
+            <span class="tag">iOS App・リリース準備中</span>
+            <h3>おくりん子</h3>
+            <p>
+              スマホから簡単・安全にファイルを送受信できる転送アプリです。
+              Bitpark株式会社より提供予定です。
+            </p>
+            <div class="card-actions">
+              <a href="support/okurinko/" class="btn btn-ghost btn-sm">サポート</a>
+            </div>
+          </div>
+        </div>
+        <p class="placeholder-note" style="margin-top:24px;">※ おくりん子は現在リリース準備中のため、App Storeリンクは審査完了後に追加してください。</p>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="kicker">About</span>
+          <h2>YOH-TECH Corp.について</h2>
+        </div>
+        <p style="max-width:640px;margin:0 auto;text-align:center;">
+          YOH-TECH Corp.は、小さく作って、丁寧に磨き上げることを大事にしています。
+        </p>
+        <div class="feature-list">
+          <div class="item reveal">
+            <h4>シンプルさ</h4>
+            <p>必要な機能を、必要なだけ。迷わず使えるデザインを心がけています。</p>
+          </div>
+          <div class="item reveal delay-1">
+            <h4>継続的な改善</h4>
+            <p>リリース後もフィードバックを受けて、アプリを育てていきます。</p>
+          </div>
+          <div class="item reveal delay-2">
+            <h4>プライバシー重視</h4>
+            <p>必要最小限のデータ収集を徹底し、安心して使えるアプリを目指します。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="wrap">
+        <div class="cta-banner">
+          <h2>ご質問・ご要望はお気軽に</h2>
+          <p>アプリのサポートやお問い合わせは、各アプリのサポートページから受け付けています。</p>
+          <a href="support/" class="btn btn-primary">サポートページへ移動</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="copyright">&copy; 2026 YOH-TECH Corp.. All rights reserved.</div>
+      <div class="footer-links">
+        <a href="support/">サポート</a>
+        <a href="https://github.com/yoh-tech" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
