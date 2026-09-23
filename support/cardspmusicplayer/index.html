@@ -46,7 +46,7 @@
         <div class="app-icon lg"><img src="../../assets/img/apps/cardspmusicplayer-icon.jpg" alt="CarDSPMusicPlayer アイコン" /></div>
         <div>
           <h1>CarDSPMusicPlayer サポート</h1>
-          <p class="lead">いつもの音楽プレーヤーが、車に乗ると本格カーオーディオに。28バンドEQ・トーン調整・車内音響自動補正が使えるミュージックプレイヤーです。</p>
+          <p class="lead">いつもの音楽プレーヤーが、車に乗ると本格カーオーディオに。28バンドEQ・トーン調整・自動レベル調整が使えるミュージックプレイヤーです。iPhone版とAndroid版があります。</p>
         </div>
       </div>
 
@@ -80,7 +80,8 @@
               <span class="icon" aria-hidden="true"></span>
             </button>
             <div class="faq-answer">
-              <p>iPhoneの「ミュージック」App（Musicライブラリ）に取り込み済みの曲を再生します。AAC・MP3・Apple Lossless（ALAC）・WAV・AIFF・FLACなど、iOSが標準で対応する形式であれば再生できます。Apple Musicのストリーミング専用曲（端末にダウンロードされていないもの）は対象外です。</p>
+              <p><strong>iPhone版</strong>：iPhoneの「ミュージック」App（Musicライブラリ）に取り込み済みの曲を再生します。AAC・MP3・Apple Lossless（ALAC）・WAV・AIFF・FLACなど、iOSが標準で対応する形式であれば再生できます。Apple Musicのストリーミング専用曲（端末にダウンロードされていないもの）は対象外です。</p>
+              <p><strong>Android版</strong>：端末の内部ストレージやSDカードに保存された音楽ファイルを自動で読み込みます。MP3・AAC/M4A・FLAC・WAV・OGG Vorbisに加え、Apple Lossless（ALAC）にも対応しています。OGG Opus・AMRなど一部の形式は端末により再生できない場合があります。著作権保護（旧FairPlay DRM）がかかったファイル（.m4p）は再生できません。</p>
             </div>
           </div>
 
@@ -90,7 +91,8 @@
               <span class="icon" aria-hidden="true"></span>
             </button>
             <div class="faq-answer">
-              <p>車内音響補正機能で、車内の音響特性を測定するために使用します。測定した音声データそのものを保存・外部送信することはなく、解析結果（補正カーブの数値）のみが端末内に保存されます。マイクを使わずに、手動で補正カーブを調整することも可能です。</p>
+              <p><strong>iPhone版</strong>：車内音響補正機能で、車内の音響特性を測定するために使用します。測定した音声データそのものを保存・外部送信することはなく、解析結果（補正カーブの数値）のみが端末内に保存されます。マイクを使わずに、手動で補正カーブを調整することも可能です。</p>
+              <p><strong>Android版</strong>：検索欄のマイクボタンによる音声検索にのみ使用します。音声の認識は端末に搭載された音声認識サービス（Googleなど）が行い、本アプリは認識結果の文字列だけを受け取ります。本アプリが音声を録音・保存・送信することはありません。音声検索を使わない場合、マイクの許可は不要です。</p>
             </div>
           </div>
 
@@ -100,7 +102,7 @@
               <span class="icon" aria-hidden="true"></span>
             </button>
             <div class="faq-answer">
-              <p>車内に限らず、いつでもお使いいただけます。サウンドタブから28バンドイコライザー・トーン調整・車内音響補正カーブをそれぞれ設定できます。</p>
+              <p>車内に限らず、いつでもお使いいただけます。サウンドタブから28バンドイコライザー・トーン調整をそれぞれ設定できます（車内音響補正カーブはiPhone版のみの機能です）。</p>
             </div>
           </div>
 
@@ -110,7 +112,17 @@
               <span class="icon" aria-hidden="true"></span>
             </button>
             <div class="faq-answer">
-              <p>アプリ内で新規プレイリストを作成し、曲の追加・並び替え・カバー画像の設定（写真または曲のジャケットから選択）ができます。Musicアプリ側のプレイリストと合わせて検索・閲覧できます。</p>
+              <p>アプリ内で新規プレイリストを作成し、曲の追加・並び替え・カバー画像の設定（写真または曲のジャケットから選択）ができます。iPhone版はMusicアプリ側のプレイリストと合わせて検索・閲覧できます。Android版はMac/PCで書き出したm3u/m3u8プレイリストのフォルダを指定して読み込むこともできます。</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              【Android版】端末に追加した曲が表示されません
+              <span class="icon" aria-hidden="true"></span>
+            </button>
+            <div class="faq-answer">
+              <p>曲の一覧は、Android本体が作成する音楽ファイルの索引（メディアストア）から読み込んでいます。ファイルをコピーした直後や、大量の曲が入ったSDカードを挿した直後は、Android本体の索引作成が終わるまで表示されないことがあります。しばらく待ってからアプリを再起動するか、端末を再起動してください。</p>
             </div>
           </div>
 
@@ -154,11 +166,11 @@
         <div class="info-grid">
           <div class="item">
             <div class="label">対応OS</div>
-            <div class="value">iOS 17.0以上</div>
+            <div class="value">iOS 17.0以上 / Android 10以上</div>
           </div>
           <div class="item">
             <div class="label">配信状況</div>
-            <div class="value">審査提出準備中</div>
+            <div class="value">iPhone版：App Store審査中<br>Android版：Google Play テスト配信準備中</div>
           </div>
           <div class="item">
             <div class="label">提供元</div>

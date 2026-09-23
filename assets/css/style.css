@@ -660,6 +660,11 @@ section {
   margin-top: 2.2em;
 }
 
+.legal h3 {
+  font-size: 1.05rem;
+  margin-top: 1.6em;
+}
+
 .legal ul {
   color: var(--text-dim);
 }
