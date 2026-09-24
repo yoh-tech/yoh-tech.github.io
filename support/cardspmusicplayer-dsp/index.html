@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>音づくりのしくみ | CarDSPMusicPlayer</title>
+  <meta name="description" content="CarDSPMusicPlayer（iPhone版・Android版共通）のイコライザー、ベース／トレブル、オートトリム、リミッターのしくみを、実際の計算にもとづくグラフで解説します。" />
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+  <link rel="stylesheet" href="dsp.css" />
+</head>
+<body>
+  <div class="bg-glow"></div>
+  <div class="bg-grid"></div>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a href="../../" class="logo">
+        <span class="logo-mark" aria-hidden="true"></span>
+        YOH-TECH Corp.
+        <small>Studio</small>
+      </a>
+      <nav class="main-nav">
+        <a href="../../#apps">アプリ</a>
+        <a href="../../#about">About</a>
+        <a href="../">サポート</a>
+        <a href="../../#contact">お問い合わせ</a>
+      </nav>
+      <button class="nav-toggle" aria-label="メニューを開く">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M2 4.5H16M2 9H16M2 13.5H16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <div class="breadcrumb reveal">
+        <a href="../../">YOH-TECH Corp.</a> / <a href="../">サポート</a> / CarDSPMusicPlayer 音づくりのしくみ
+      </div>
+
+      <div class="dsp-hero reveal delay-1">
+        <span class="kicker">How the sound is shaped</span>
+        <h1>音づくりのしくみ</h1>
+        <p class="lead">
+          CarDSPMusicPlayer が、イコライザーやベース／トレブルで音をどう変えているのかを、グラフで説明します。
+          グラフはすべて、アプリの中で実際に使っている計算式でその場で描いています。スライダーを動かして、音の変化を確かめてみてください。
+        </p>
+        <div class="platform-links">
+          <a href="../cardspmusicplayer/" class="btn btn-ghost btn-sm">iPhone版サポート</a>
+          <a href="../cardspmusicplayer-android/" class="btn btn-ghost btn-sm">Android版サポート</a>
+        </div>
+        <p class="scope-note">
+          このページの内容は iPhone版・Android版に共通です。各版だけにある機能（iPhone版の車内音響補正、Android版の音量の均一化・無音トリムなど）は、それぞれのサポートページをご覧ください。
+        </p>
+      </div>
+
+      <nav class="toc reveal delay-2" aria-label="目次">
+        <a href="#flow">1. 全体の流れ</a>
+        <a href="#freq">2. 周波数とは</a>
+        <a href="#series">3. 分けずに重ねる</a>
+        <a href="#bell">4. ベル型フィルター</a>
+        <a href="#geq">5. 28バンドを重ねる</a>
+        <a href="#shelf">6. ベース／トレブル</a>
+        <a href="#db">7. dBの感覚</a>
+        <a href="#trim">8. オートトリム</a>
+        <a href="#limiter">9. リミッター</a>
+        <a href="#summary">10. まとめ</a>
+      </nav>
+
+      <!-- 1 ------------------------------------------------------------- -->
+      <section id="flow" class="dsp-section">
+        <h2><span class="num">1</span>全体の流れ</h2>
+        <p>曲のデータは、スピーカーやイヤホンに届くまでに、次の順番で加工されます。</p>
+        <ol class="flow">
+          <li class="flow-io">曲のデータ</li>
+          <li><strong>28バンドイコライザー</strong><span>28か所の音の高さを、それぞれ上げ下げ</span></li>
+          <li><strong>ベース／トレブル</strong><span>低音全体・高音全体をまとめて上げ下げ</span></li>
+          <li><strong>オートトリム</strong><span>上げすぎたとき、全体の音量を自動で少し下げる</span></li>
+          <li class="flow-always"><strong>リミッター</strong><span>最後の安全装置。音割れの手前で頭を押さえる（常に動作）</span></li>
+          <li class="flow-io">スピーカー／イヤホン</li>
+        </ol>
+        <p class="note">
+          イコライザーをオフにすると、イコライザー・ベース／トレブル・オートトリムはまとめて通らなくなります。リミッターは常に働きます。
+          iPhone版は、入口で常に音量を 6dB 下げて余裕（ヘッドルーム）を作ってから処理します。
+        </p>
+      </section>
+
+      <!-- 2 ------------------------------------------------------------- -->
+      <section id="freq" class="dsp-section">
+        <h2><span class="num">2</span>音の高さと「周波数」</h2>
+        <p>
+          音は空気のふるえです。1秒間にふるえる回数を<strong>周波数（Hz, ヘルツ）</strong>と呼び、回数が少ないほど低い音、多いほど高い音になります。
+          人の耳に聞こえるのは、だいたい 20Hz〜20,000Hz（20kHz）です。
+        </p>
+        <div class="freq-strip" role="img" aria-label="周波数の帯。20Hzから150Hzが低音、150Hzから4kHzが中音、4kHzから20kHzが高音">
+          <div class="freq-zone low"><b>低音</b><span>バスドラム・ベース</span></div>
+          <div class="freq-zone mid"><b>中音</b><span>声・ピアノ・ギター</span></div>
+          <div class="freq-zone high"><b>高音</b><span>シンバル・空気感</span></div>
+        </div>
+        <div class="freq-scale" aria-hidden="true">
+          <span style="left:0%">20Hz</span><span style="left:33.3%">200Hz</span><span style="left:66.7%">2kHz</span><span style="left:100%">20kHz</span>
+        </div>
+        <p class="note">
+          周波数は2倍になると1オクターブ上がります（ピアノの「ド」から次の「ド」）。そのため、このページのグラフの横軸は、等間隔ではなく「倍々」に並べています。
+        </p>
+      </section>
+
+      <!-- 3 ------------------------------------------------------------- -->
+      <section id="series" class="dsp-section">
+        <h2><span class="num">3</span>「分けて」いるのではなく「重ねて」いる</h2>
+        <p>
+          イコライザーと聞くと、音を28個に切り分けて、それぞれの音量を変えてから混ぜ直す仕組みを想像するかもしれません。
+          カーオーディオのチャンネルデバイダー（クロスオーバー）は、実際にそうやって低音をウーファーへ、高音をツイーターへ分けて送ります。
+        </p>
+        <p>
+          このアプリのイコライザーは、<strong>音を分けずに、1本の流れのまま、28枚のフィルターを順番に通しています。</strong>
+          1枚1枚は自分の担当の高さのあたりだけを変え、それ以外はほとんどそのまま通します。色の付いた透明な下敷きを28枚重ねて光を通すようなイメージです。
+        </p>
+        <div class="compare">
+          <figure class="compare-item muted">
+            <figcaption>分けて混ぜ直す方式（このアプリではない）</figcaption>
+            <svg viewBox="0 0 320 130" role="img" aria-label="音を低・中・高の3つに分け、それぞれ調整してから混ぜ直す図">
+              <g class="sch">
+                <rect x="4" y="50" width="54" height="30" rx="8"/><text x="31" y="69">音</text>
+                <path d="M58 65 L90 25 M58 65 L90 65 M58 65 L90 105"/>
+                <rect x="90" y="10" width="70" height="30" rx="8"/><text x="125" y="29">低音</text>
+                <rect x="90" y="50" width="70" height="30" rx="8"/><text x="125" y="69">中音</text>
+                <rect x="90" y="90" width="70" height="30" rx="8"/><text x="125" y="109">高音</text>
+                <path d="M160 25 L200 65 M160 65 L200 65 M160 105 L200 65"/>
+                <circle cx="206" cy="65" r="7"/>
+                <path d="M213 65 L250 65"/>
+                <rect x="250" y="50" width="66" height="30" rx="8"/><text x="283" y="69">音</text>
+              </g>
+            </svg>
+          </figure>
+          <figure class="compare-item">
+            <figcaption>このアプリ：1本のまま28枚を順に通す</figcaption>
+            <svg viewBox="0 0 320 130" role="img" aria-label="音が1本の流れのまま、28枚のフィルターを順番に通る図">
+              <g class="sch on">
+                <rect x="4" y="50" width="44" height="30" rx="8"/><text x="26" y="69">音</text>
+                <path d="M48 65 L64 65"/>
+                <rect x="64" y="40" width="22" height="50" rx="5"/>
+                <path d="M86 65 L94 65"/>
+                <rect x="94" y="40" width="22" height="50" rx="5"/>
+                <path d="M116 65 L124 65"/>
+                <rect x="124" y="40" width="22" height="50" rx="5"/>
+                <text x="178" y="69" class="dots">…</text>
+                <path d="M200 65 L208 65"/>
+                <rect x="208" y="40" width="22" height="50" rx="5"/>
+                <path d="M230 65 L262 65"/>
+                <rect x="262" y="50" width="54" height="30" rx="8"/><text x="289" y="69">音</text>
+                <text x="75" y="104" class="small">1</text><text x="105" y="104" class="small">2</text><text x="135" y="104" class="small">3</text><text x="219" y="104" class="small">28</text>
+              </g>
+            </svg>
+          </figure>
+        </div>
+        <ul class="points">
+          <li>混ぜ直すときの「つなぎ目」のズレ（位相のずれや、境目の音のへこみ）が起きにくい</li>
+          <li>全部を 0dB（Flat）にすると、フィルターは何もしないのと同じになり、元の音がそのまま出る</li>
+        </ul>
+      </section>
+
+      <!-- 4 ------------------------------------------------------------- -->
+      <section id="bell" class="dsp-section">
+        <h2><span class="num">4</span>1枚のフィルターは「ベル型」</h2>
+        <p>
+          28枚のフィルターは、どれも<strong>ベル（釣り鐘）型</strong>です（専門的にはピーキングフィルター）。
+          担当の周波数（中心）が一番大きく変わり、そこから離れるほど、なだらかに元の 0dB に戻ります。
+          上げる（ブースト）と山、下げる（カット）と谷になります。
+        </p>
+        <div class="chart-card">
+          <div class="controls">
+            <label>中心の周波数
+              <select id="bell-freq"></select>
+            </label>
+            <label class="slider">上げ下げの量 <output id="bell-gain-out">+6.0 dB</output>
+              <input type="range" id="bell-gain" min="-8.5" max="8.5" step="0.5" value="6" />
+            </label>
+          </div>
+          <div class="chart" id="chart-bell"></div>
+          <p class="chart-caption">このバンドだけを動かしたときの、周波数ごとの変化量です。ベルの幅（Q）は全バンド共通で 4.3。1バンドで動かせる範囲は ±8.5dB です。</p>
+          <details class="data-table" data-for="chart-bell"><summary>数値で見る</summary><div></div></details>
+        </div>
+      </section>
+
+      <!-- 5 ------------------------------------------------------------- -->
+      <section id="geq" class="dsp-section">
+        <h2><span class="num">5</span>28枚のベルを重ねる</h2>
+        <p>
+          28バンドは、31.5Hz から 16kHz まで<strong>1/3オクターブごと</strong>（1オクターブに3つずつ）に並んでいます。
+          隣どうしのベルは裾が重なり合う幅なので、28枚を重ねると、全体として1本のつながったカーブになります。
+        </p>
+        <div class="chart-card">
+          <div class="controls">
+            <div class="seg" role="group" aria-label="例のカーブ">
+              <button type="button" data-geq="smile" class="is-on">低音と高音を持ち上げる</button>
+              <button type="button" data-geq="vocal">声を前に出す</button>
+              <button type="button" data-geq="clear">こもりを取る</button>
+            </div>
+          </div>
+          <div class="chart" id="chart-geq"></div>
+          <div class="legend" id="legend-geq"></div>
+          <p class="chart-caption">細い線が28枚それぞれのベル、太い線がそれを全部重ねた結果です。例のカーブは説明用で、アプリのプリセットとは違います。</p>
+          <p class="chart-caption">
+            よく見ると、重ねた結果には細かな波が残ります。ベルとベルの間が少しへこみ、隣どうしの裾が足し合わさるためです。
+            たとえば全バンドを +3dB にすると、実際は +3.8〜+4.9dB ほどになります（波の幅は約1dB）。1枚ごとの細かさを優先した設計による、正常な特性です。
+          </p>
+          <details class="data-table" data-for="chart-geq"><summary>数値で見る</summary><div></div></details>
+        </div>
+        <div class="band-table">
+          <div><b>31.5〜125Hz</b><span>バスドラム、ベースの芯、迫力</span></div>
+          <div><b>160〜630Hz</b><span>音の厚み。上げすぎると「こもる」</span></div>
+          <div><b>800Hz〜2.5kHz</b><span>声やメロディの中心</span></div>
+          <div><b>3.15〜6.3kHz</b><span>はっきり感。上げすぎると「耳に痛い」</span></div>
+          <div><b>8〜16kHz</b><span>きらびやかさ、空気感</span></div>
+        </div>
+      </section>
+
+      <!-- 6 ------------------------------------------------------------- -->
+      <section id="shelf" class="dsp-section">
+        <h2><span class="num">6</span>ベース／トレブルは「棚型」</h2>
+        <p>
+          ベースとトレブルは、ベル型ではなく<strong>棚（シェルフ）型</strong>です。ある周波数を境に、そこから先を丸ごとまとめて上げ下げします。
+          昔のアンプの「BASS」「TREBLE」つまみと同じ考え方です。
+          28バンドで細かい形を作り、ベース／トレブルで全体の傾きを大まかに決める、という使い分けになります。
+        </p>
+        <div class="chart-card">
+          <div class="controls">
+            <label class="slider">ベース（150Hz 以下） <output id="bass-out">+6.0 dB</output>
+              <input type="range" id="bass" min="-8.5" max="8.5" step="0.5" value="6" />
+            </label>
+            <label class="slider">トレブル（4kHz 以上） <output id="treble-out">+4.0 dB</output>
+              <input type="range" id="treble" min="-8.5" max="8.5" step="0.5" value="4" />
+            </label>
+          </div>
+          <div class="chart" id="chart-shelf"></div>
+          <div class="legend" id="legend-shelf"></div>
+          <p class="chart-caption">ベースは 150Hz より下、トレブルは 4kHz より上を、平らな棚のように持ち上げ（下げ）ます。範囲はどちらも ±8.5dB。28バンドと同時に使うと、効果は足し算になります。</p>
+          <details class="data-table" data-for="chart-shelf"><summary>数値で見る</summary><div></div></details>
+        </div>
+      </section>
+
+      <!-- 7 ------------------------------------------------------------- -->
+      <section id="db" class="dsp-section">
+        <h2><span class="num">7</span>「dB（デシベル）」の感覚</h2>
+        <p>音量の変化は dB で表します。足し算で考えられて便利ですが、実際の大きさは「倍」で変わります。</p>
+        <div class="table-wrap">
+          <table class="dsp-table">
+            <thead><tr><th>変化</th><th>波の振れ幅</th><th>耳で感じる大きさ（目安）</th></tr></thead>
+            <tbody>
+              <tr><td>+1dB</td><td>約1.12倍</td><td>ほとんど分からない</td></tr>
+              <tr><td>+3dB</td><td>約1.4倍</td><td>少し大きくなった</td></tr>
+              <tr><td>+6dB</td><td>約2倍</td><td>はっきり大きくなった</td></tr>
+              <tr><td>+8.5dB</td><td>約2.7倍</td><td>かなり大きい（1バンドの上限）</td></tr>
+              <tr><td>+10dB</td><td>約3.2倍</td><td>2倍くらいうるさく感じる</td></tr>
+              <tr><td>−6dB</td><td>約0.5倍</td><td>はっきり小さくなった</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 8 ------------------------------------------------------------- -->
+      <section id="trim" class="dsp-section">
+        <h2><span class="num">8</span>上げすぎを自動で防ぐ「オートトリム」</h2>
+        <p>
+          デジタルの音には「これ以上は表せない」という天井があり、超えた部分は切り取られて「バリッ」という音割れになります。
+          最近の曲はもともと天井近くまで大きく作られていることが多く、イコライザーで大きく持ち上げるとすぐに天井を超えてしまいます。
+        </p>
+        <p>
+          そこでアプリは、<strong>一番持ち上がっているところが +9dB を超えそうなら、その分だけ全体の音量を自動で下げます。</strong>
+          一番持ち上がっているところは、ベース／トレブルとの重なりも足して計算します。全体を下げても、カーブの<strong>形</strong>は変わりません。
+        </p>
+        <div class="chart-card">
+          <div class="controls">
+            <label class="slider">63Hz のバンド <output id="trim-band-out">+8.5 dB</output>
+              <input type="range" id="trim-band" min="-8.5" max="8.5" step="0.5" value="8.5" />
+            </label>
+            <label class="slider">ベース <output id="trim-bass-out">+8.5 dB</output>
+              <input type="range" id="trim-bass" min="-8.5" max="8.5" step="0.5" value="8.5" />
+            </label>
+          </div>
+          <div class="trim-readout" id="trim-readout" aria-live="polite"></div>
+          <div class="chart" id="chart-trim"></div>
+          <div class="legend" id="legend-trim"></div>
+          <p class="chart-caption">点線が調整したままのカーブ、実線がオートトリムで全体を下げた後のカーブです。下げる量は最大 18dB で、上げることはありません。</p>
+          <details class="data-table" data-for="chart-trim"><summary>数値で見る</summary><div></div></details>
+        </div>
+      </section>
+
+      <!-- 9 ------------------------------------------------------------- -->
+      <section id="limiter" class="dsp-section">
+        <h2><span class="num">9</span>最後の安全装置「先読みリミッター」</h2>
+        <p>
+          オートトリムはカーブの形から計算するので、曲の中の一瞬だけ大きい音（ドラムのアタックなど）までは防げません。
+          そこで最後に、<strong>リミッター</strong>が常に働いています。
+          3ミリ秒先の音を先に見ておき、大きい音が来る少し手前から、音量をなめらかに絞ります。
+        </p>
+        <div class="chart-card">
+          <div class="controls">
+            <label class="slider">入ってくる音の大きさ <output id="lim-drive-out">+3.0 dB</output>
+              <input type="range" id="lim-drive" min="-6" max="9" step="0.5" value="3" />
+            </label>
+          </div>
+          <div class="chart" id="chart-limiter"></div>
+          <div class="legend" id="legend-limiter"></div>
+          <p class="chart-caption">
+            ドラムを2回たたいたような音を例に、リミッターに入る前と後の音の大きさ（1ミリ秒ごとの最大値）を比べています。
+            −2dB を超えそうなところだけ絞り、−1dB は絶対に超えません。出力は先読みの分（3ミリ秒）だけ遅れて出ますが、比べやすいように位置をそろえて表示しています。
+          </p>
+          <details class="data-table" data-for="chart-limiter"><summary>数値で見る</summary><div></div></details>
+        </div>
+        <div class="table-wrap">
+          <table class="dsp-table">
+            <thead><tr><th>項目</th><th>値</th><th>意味</th></tr></thead>
+            <tbody>
+              <tr><td>押さえ始める大きさ</td><td>−2dB</td><td>これを超えそうな音だけ、なめらかに絞る</td></tr>
+              <tr><td>絶対に超えない天井</td><td>−1dB</td><td>ここより上には出さない</td></tr>
+              <tr><td>先読み</td><td>3ミリ秒</td><td>大きい音が来る前から準備する</td></tr>
+              <tr><td>絞る速さ</td><td>1ミリ秒</td><td>大きい音にすばやく反応する</td></tr>
+              <tr><td>戻る速さ</td><td>100ミリ秒</td><td>音が不自然に揺れないよう、ゆっくり戻す</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">
+          もともと天井ぎりぎりまで大きく作られた曲（最近のポップスや一部のライブ盤など）では、リミッターが働き続けるため、音が少し平たく詰まって聞こえることがあります。これは曲の作りによるもので、故障ではありません。
+        </p>
+      </section>
+
+      <!-- 10 ------------------------------------------------------------ -->
+      <section id="summary" class="dsp-section">
+        <h2><span class="num">10</span>まとめ</h2>
+        <div class="table-wrap">
+          <table class="dsp-table">
+            <thead><tr><th>処理</th><th>何をするか</th><th>主な数値</th><th>いつ働くか</th></tr></thead>
+            <tbody>
+              <tr><td>28バンドイコライザー</td><td>28か所をベル型に上げ下げ</td><td>31.5Hz〜16kHz、1/3オクターブ、Q=4.3、±8.5dB</td><td>イコライザーオン時</td></tr>
+              <tr><td>ベース</td><td>低音をまとめて上げ下げ</td><td>150Hz 以下、±8.5dB</td><td>イコライザーオン時</td></tr>
+              <tr><td>トレブル</td><td>高音をまとめて上げ下げ</td><td>4kHz 以上、±8.5dB</td><td>イコライザーオン時</td></tr>
+              <tr><td>オートトリム</td><td>上げすぎたら全体を下げる</td><td>+9dB を超えた分、最大 −18dB</td><td>イコライザーオン時</td></tr>
+              <tr><td>リミッター</td><td>一瞬の大きな音を押さえる</td><td>−2dB から、天井 −1dB、先読み 3ms</td><td>常に</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          音の加工は、すべて 32bit の浮動小数点によるデジタル計算で行っています。抵抗やコンデンサなどのアナログ回路を通さないので、部品のばらつきや温度による変化が無く、いつも同じ結果になります。
+        </p>
+        <div class="platform-links">
+          <a href="../cardspmusicplayer/" class="btn btn-ghost btn-sm">iPhone版サポートへ</a>
+          <a href="../cardspmusicplayer-android/" class="btn btn-ghost btn-sm">Android版サポートへ</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="copyright">&copy; 2026 YOH-TECH Corp.. All rights reserved.</div>
+      <div class="footer-links">
+        <a href="../../">ホーム</a>
+        <a href="../">サポート一覧</a>
+        <a href="../cardspmusicplayer/">iPhone版</a>
+        <a href="../cardspmusicplayer-android/">Android版</a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="chart-tip" id="chart-tip" role="status" aria-live="polite"></div>
+
+  <script src="../../assets/js/main.js"></script>
+  <script src="dsp.js"></script>
+</body>
+</html>

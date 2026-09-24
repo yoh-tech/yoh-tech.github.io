@@ -1,0 +1,516 @@
+/* CarDSPMusicPlayer — 音づくりのしくみ (page-specific) ------------------ */
+
+:root {
+  --series-1: #8f73ff;   /* violet: primary curve (validated on #10131c) */
+  --series-2: #27a89e;   /* teal: secondary curve */
+  --chart-surface: #10131c;
+  --chart-grid: rgba(255, 255, 255, 0.07);
+  --chart-axis: rgba(255, 255, 255, 0.22);
+  --chart-ref: rgba(255, 255, 255, 0.35);
+  --chart-ghost: rgba(237, 240, 247, 0.28);
+}
+
+.dsp-hero {
+  max-width: 760px;
+  padding: 40px 0 8px;
+}
+
+.dsp-hero .kicker {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  margin-bottom: 12px;
+}
+
+.dsp-hero h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.platform-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 8px 0 16px;
+}
+
+.scope-note {
+  font-size: 0.85rem;
+  color: var(--text-faint);
+}
+
+.toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 24px 0 8px;
+}
+
+.toc a {
+  font-size: 0.82rem;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-dim);
+  background: var(--surface);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.toc a:hover {
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dsp-section {
+  padding: 64px 0 8px;
+  max-width: 900px;
+  scroll-margin-top: 80px;
+}
+
+.dsp-section h2 {
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.dsp-section h2 .num {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--accent-gradient);
+  color: #fff;
+  font-size: 1rem;
+}
+
+.dsp-section strong {
+  color: var(--text);
+}
+
+.note {
+  font-size: 0.88rem;
+  color: var(--text-faint);
+}
+
+/* Flow ------------------------------------------------------------------ */
+
+.flow {
+  list-style: none;
+  margin: 24px 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.flow li {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  align-items: baseline;
+}
+
+.flow li + li::before {
+  content: "";
+  position: absolute;
+  top: -11px;
+  left: 28px;
+  width: 2px;
+  height: 11px;
+  background: var(--accent-gradient);
+}
+
+.flow li strong {
+  font-family: "Space Grotesk", "Inter", "Hiragino Sans", sans-serif;
+}
+
+.flow li span {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.flow .flow-io {
+  background: transparent;
+  border-style: dashed;
+  color: var(--text-faint);
+  font-size: 0.9rem;
+}
+
+.flow .flow-always {
+  border-color: rgba(52, 214, 201, 0.4);
+}
+
+/* Frequency strip ------------------------------------------------------- */
+
+.freq-strip {
+  display: grid;
+  /* log scale 20Hz..20kHz: 150Hz ≈ 29%, 4kHz ≈ 76.7% */
+  grid-template-columns: 29.2fr 47.5fr 23.3fr;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin: 24px 0 6px;
+  border: 1px solid var(--border);
+}
+
+.freq-zone {
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.freq-zone b {
+  font-family: "Space Grotesk", "Inter", "Hiragino Sans", sans-serif;
+}
+
+.freq-zone span {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.freq-zone.low { background: rgba(124, 92, 255, 0.22); }
+.freq-zone.mid { background: rgba(255, 255, 255, 0.05); }
+.freq-zone.high { background: rgba(52, 214, 201, 0.18); }
+
+.freq-scale {
+  position: relative;
+  height: 20px;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  margin: 0 18px 18px 18px;
+}
+
+.freq-scale span {
+  position: absolute;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+/* Series vs crossover schematic ---------------------------------------- */
+
+.compare {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 24px 0 16px;
+}
+
+.compare-item {
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.compare-item figcaption {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.compare-item svg {
+  width: 100%;
+  height: auto;
+}
+
+.sch rect,
+.sch circle {
+  fill: rgba(255, 255, 255, 0.04);
+  stroke: var(--text-faint);
+  stroke-width: 1.5;
+}
+
+.sch path {
+  fill: none;
+  stroke: var(--text-faint);
+  stroke-width: 1.5;
+}
+
+.sch text {
+  fill: var(--text-dim);
+  font-size: 12px;
+  text-anchor: middle;
+  font-family: "Inter", "Hiragino Sans", sans-serif;
+}
+
+.sch text.small {
+  font-size: 10px;
+  fill: var(--text-faint);
+}
+
+.sch text.dots {
+  font-size: 18px;
+}
+
+.sch.on rect { stroke: var(--series-1); }
+.sch.on path { stroke: var(--series-1); }
+
+.compare-item.muted {
+  opacity: 0.75;
+}
+
+.points {
+  color: var(--text-dim);
+  padding-left: 1.2em;
+}
+
+/* Chart card ------------------------------------------------------------ */
+
+.chart-card {
+  background: var(--chart-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px 22px 16px;
+  margin: 24px 0 16px;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 28px;
+  align-items: flex-end;
+  margin-bottom: 14px;
+}
+
+.controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  min-width: 200px;
+  flex: 1 1 200px;
+}
+
+.controls output {
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+.controls select {
+  background: var(--bg-soft);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font: inherit;
+}
+
+.controls input[type="range"] {
+  width: 100%;
+  accent-color: var(--series-1);
+}
+
+.seg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.seg button {
+  font-size: 0.82rem;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.seg button.is-on {
+  background: var(--surface-strong);
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.chart {
+  position: relative;
+  width: 100%;
+}
+
+.chart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  touch-action: pan-y;
+}
+
+.chart .grid line { stroke: var(--chart-grid); stroke-width: 1; }
+.chart .axis line { stroke: var(--chart-axis); stroke-width: 1; }
+.chart .zero { stroke: var(--chart-ref); stroke-width: 1; }
+.chart .ref { stroke: var(--chart-ref); stroke-width: 1; stroke-dasharray: 4 4; }
+.chart .ref-label { fill: var(--text-faint); font-size: 11px; }
+.chart .tick { fill: var(--text-faint); font-size: 11px; font-variant-numeric: tabular-nums; }
+.chart .axis-title { fill: var(--text-faint); font-size: 11px; }
+.chart .series { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.chart .direct-label { font-size: 12px; fill: var(--text-dim); }
+.chart .hover-line { stroke: rgba(255, 255, 255, 0.35); stroke-width: 1; }
+.chart .hover-dot { stroke: var(--chart-surface); stroke-width: 2; }
+.chart .band-marker { fill: var(--text-faint); }
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin-top: 8px;
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend i {
+  display: inline-block;
+  width: 18px;
+  height: 0;
+  border-top: 2px solid currentColor;
+}
+
+.legend i.dashed { border-top-style: dashed; }
+.legend i.thin { border-top-width: 1px; }
+
+.chart-caption {
+  font-size: 0.82rem;
+  color: var(--text-faint);
+  margin: 12px 0 6px;
+}
+
+.data-table summary {
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: var(--accent-2);
+  margin: 4px 0;
+}
+
+.data-table table {
+  font-size: 0.8rem;
+}
+
+.trim-readout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.trim-readout div {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
+.trim-readout small {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+}
+
+.trim-readout b {
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+  font-family: "Space Grotesk", "Inter", sans-serif;
+}
+
+/* Tables ---------------------------------------------------------------- */
+
+.table-wrap {
+  overflow-x: auto;
+  margin: 16px 0;
+}
+
+.dsp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.dsp-table th,
+.dsp-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.dsp-table th {
+  color: var(--text-faint);
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+
+.dsp-table td {
+  color: var(--text-dim);
+}
+
+.dsp-table td:first-child {
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.band-table {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.band-table div {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.band-table b { font-size: 0.9rem; }
+.band-table span { font-size: 0.8rem; color: var(--text-dim); }
+
+/* Tooltip --------------------------------------------------------------- */
+
+.chart-tip {
+  position: fixed;
+  pointer-events: none;
+  z-index: 60;
+  background: rgba(16, 19, 28, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 0.78rem;
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  white-space: nowrap;
+}
+
+.chart-tip.is-on { opacity: 1; }
+.chart-tip .t-head { color: var(--text-faint); margin-bottom: 4px; }
+.chart-tip .t-row { display: flex; align-items: center; gap: 8px; }
+.chart-tip .t-row i { width: 10px; height: 2px; display: inline-block; }
+.chart-tip .t-row b { margin-left: auto; padding-left: 12px; font-variant-numeric: tabular-nums; }
+
+@media (max-width: 640px) {
+  .dsp-section { padding-top: 48px; }
+  .chart-card { padding: 16px 12px 12px; }
+  .freq-zone span { display: none; }
+}
