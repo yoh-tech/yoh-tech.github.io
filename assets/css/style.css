@@ -720,6 +720,62 @@ section {
   color: var(--text-faint);
 }
 
+/* App message (support pages) ------------------------------------------- */
+
+.app-message {
+  position: relative;
+  max-width: 760px;
+  margin: 8px 0 36px;
+  padding: 26px 28px 22px 30px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.app-message::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 3px;
+  background: var(--accent-gradient);
+}
+
+.app-message p {
+  line-height: 1.95;
+}
+
+.app-message-lead {
+  font-family: "Space Grotesk", "Inter", "Hiragino Sans", sans-serif;
+  font-size: clamp(1.2rem, 2.6vw, 1.5rem);
+  font-weight: 700;
+  color: var(--text) !important;
+  line-height: 1.5 !important;
+  margin-bottom: 0.8em;
+}
+
+.app-message-close {
+  color: var(--text) !important;
+  font-weight: 600;
+  margin-bottom: 0.6em;
+}
+
+.app-message-link {
+  font-size: 0.88rem;
+  color: var(--accent-2);
+}
+
+.app-message-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .app-message { padding: 20px 18px 18px 22px; }
+  .app-message br { display: none; }
+}
+
 /* Utility ----------------------------------------------------------- */
 
 .reveal {
