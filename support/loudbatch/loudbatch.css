@@ -39,6 +39,12 @@
   margin-top: 24px;
 }
 
+.lb-download .meta .free {
+  color: var(--accent-2);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
 .lb-download .meta {
   font-size: 0.82rem;
   color: var(--text-faint);
