@@ -1,0 +1,399 @@
+/* LoudBatch — Mac用 音量チェックアプリ (page-specific) --------------------- */
+
+:root {
+  --boost: #8f73ff;   /* 上げる補正（サイトのアクセント紫） */
+  --cut: #ff9a62;     /* 下げる補正 */
+  --target: #34d6c9;  /* 目標レベル */
+  --meter-track: rgba(255, 255, 255, 0.06);
+}
+
+.lb-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: center;
+  padding: 24px 0 8px;
+}
+
+.lb-hero h1 {
+  font-size: clamp(2.4rem, 5vw, 3.4rem);
+  margin-bottom: 10px;
+}
+
+.lb-hero .for {
+  font-size: 1.12rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+
+.lb-hero .for span {
+  color: var(--accent-2);
+}
+
+.lb-download {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
+  margin-top: 24px;
+}
+
+.lb-download .meta {
+  font-size: 0.82rem;
+  color: var(--text-faint);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 補正イメージ ------------------------------------------------------------ */
+
+.lb-meter {
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-soft);
+  padding: 24px;
+  box-shadow: var(--shadow-lg);
+  display: grid;
+  gap: 14px;
+}
+
+.lb-meter-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 0.8rem;
+}
+
+.lb-meter-head .title {
+  color: var(--text-dim);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.lb-meter-head .goal {
+  color: var(--target);
+  font-variant-numeric: tabular-nums;
+}
+
+.lb-scale {
+  position: relative;
+  height: 16px;
+  margin-left: 132px;
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.lb-scale span {
+  position: absolute;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.lb-rows {
+  display: grid;
+  gap: 10px;
+}
+
+.lb-row {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.lb-row .name {
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lb-row .name small {
+  display: block;
+  color: var(--text-faint);
+  font-size: 0.7rem;
+}
+
+.lb-bar {
+  position: relative;
+  height: 26px;
+  background: var(--meter-track);
+  border-radius: 6px;
+}
+
+.lb-bar .fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 6px 0 0 6px;
+  background: linear-gradient(90deg, rgba(124, 92, 255, 0.12), rgba(124, 92, 255, 0.32));
+}
+
+.lb-bar .shift {
+  position: absolute;
+  top: 9px;
+  height: 8px;
+  border-radius: 4px;
+}
+
+.lb-bar .line {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--target);
+}
+
+.lb-bar .gain {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.up { color: var(--boost); }
+.down { color: var(--cut); }
+.shift.up { background: var(--boost); }
+.shift.down { background: var(--cut); }
+
+.lb-meter-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+}
+
+.lb-meter-foot i {
+  display: inline-block;
+  width: 12px;
+  height: 6px;
+  border-radius: 3px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* 比較 ------------------------------------------------------------------- */
+
+.lb-compare {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.lb-compare .item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  padding: 26px;
+}
+
+.lb-compare .item.mac {
+  border-color: rgba(52, 214, 201, 0.45);
+}
+
+.lb-compare .who {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.lb-compare .mac .who {
+  color: var(--accent-2);
+}
+
+.lb-compare .big {
+  font-family: "Space Grotesk", "Inter", "Hiragino Sans", sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.lb-compare .item p:last-child {
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+/* 手順 ------------------------------------------------------------------- */
+
+.lb-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  counter-reset: step;
+}
+
+.lb-steps li {
+  counter-increment: step;
+}
+
+.lb-steps li::before {
+  content: counter(step);
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent-2);
+  color: var(--accent-2);
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.lb-steps h3 {
+  font-size: 1.02rem;
+}
+
+.lb-steps p {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.86em;
+  background: var(--surface-strong);
+  color: var(--text);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* CSV -------------------------------------------------------------------- */
+
+.lb-csv {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+}
+
+.lb-csv table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 760px;
+  font-size: 0.82rem;
+}
+
+.lb-csv th,
+.lb-csv td {
+  padding: 11px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.lb-csv th {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-weight: 500;
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  background: var(--surface);
+}
+
+.lb-csv td.n {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.lb-csv td.hl {
+  color: var(--accent-2);
+  font-weight: 600;
+}
+
+.lb-csv td.err {
+  color: var(--cut);
+}
+
+.lb-csv tr:last-child td {
+  border-bottom: 0;
+}
+
+.lb-note {
+  margin-top: 16px;
+  font-size: 0.9rem;
+}
+
+/* 仕様 ------------------------------------------------------------------- */
+
+.lb-spec {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 48px;
+  margin: 0;
+}
+
+.lb-spec div {
+  display: grid;
+  grid-template-columns: 8.5em minmax(0, 1fr);
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.lb-spec dt {
+  color: var(--text-faint);
+  font-size: 0.88rem;
+}
+
+.lb-spec dd {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.lb-scale-ref {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin-top: 22px;
+  font-size: 0.82rem;
+  color: var(--text-faint);
+}
+
+.lb-scale-ref b {
+  color: var(--text);
+  font-weight: 600;
+  margin-right: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.lb-license a {
+  color: var(--accent-2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (max-width: 900px) {
+  .lb-hero { grid-template-columns: 1fr; gap: 36px; }
+  .lb-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lb-spec { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+  .lb-compare, .lb-steps { grid-template-columns: 1fr; }
+  .lb-row { grid-template-columns: 88px minmax(0, 1fr); }
+  .lb-scale { margin-left: 100px; }
+  .lb-spec div { grid-template-columns: 1fr; gap: 2px; }
+}
