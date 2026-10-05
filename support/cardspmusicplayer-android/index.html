@@ -46,7 +46,7 @@
         <div class="app-icon lg"><img src="../../assets/img/apps/cardspmusicplayer-icon.jpg" alt="CarDSPMusicPlayer アイコン" /></div>
         <div>
           <h1>CarDSPMusicPlayer サポート <small style="font-size:0.55em;opacity:.7;">Android版</small></h1>
-          <p class="lead">いつもの音楽プレーヤーが、車に乗ると本格カーオーディオに。28バンドEQ・トーン調整・自動レベル調整・音量正規化が使えるミュージックプレイヤーです。FLAC/ALACにも対応し、車載AIBOXやスマホで使えます。</p>
+          <p class="lead">いつもの音楽プレーヤーが、車に乗ると本格カーオーディオに。28バンドEQ・トーン調整・車内音響自動補正・音量正規化が使えるミュージックプレイヤーです。USB DACでのハイレゾ出力やFLAC/ALACにも対応し、車載AIBOXやスマホで使えます。</p>
         </div>
       </div>
 
@@ -62,6 +62,15 @@
         </p>
         <p class="app-message-close">その前に、まずこのアプリで試してみてください。</p>
         <a href="../cardspmusicplayer-dsp/" class="app-message-link">音づくりのしくみを見る →</a>
+      </div>
+
+      <div class="app-message reveal delay-1">
+        <p class="app-message-lead">USB DACで、最大384kHzのハイレゾ出力。</p>
+        <p>
+          USB DACをつないで「USB DAC直接出力」をオンにすると、Androidのミキサーを通さず、ハイレゾ音源を曲と同じサンプルレートのままDACへ送ります。<br>
+          アップサンプリングをオンにすれば、CD品質（44.1kHz）の曲も、44.1kHz系なら352.8kHz、48kHz系なら384kHzで出力できます。
+        </p>
+        <p class="app-message-close">※ 出力できるサンプルレートの上限は、接続するDACと端末の対応範囲によります。</p>
       </div>
 
       <div class="quick-links reveal delay-2">
@@ -113,7 +122,9 @@
               <span class="icon" aria-hidden="true"></span>
             </button>
             <div class="faq-answer">
-              <p>検索欄のマイクボタンによる音声検索にのみ使用します。音声の認識は端末に搭載された音声認識サービス（Googleなど）が行い、本アプリは認識結果の文字列だけを受け取ります。本アプリが音声を録音・保存・送信することはありません。音声検索を使わない場合、マイクの許可は不要です。</p>
+              <p>次の2つの機能で使用します。どちらも使わない場合、マイクの許可は不要です。</p>
+              <p><strong>車内補正・マイクキャリブレーション</strong>：測定用のスイープ音をスマホのマイクで録り、車内（またはマイク自体）の周波数特性を解析します。録った音は解析のためにメモリ上で一時的に使うだけで、音声データとして保存・送信することはありません。端末に残るのは解析結果（補正カーブなどの数値）だけです。</p>
+              <p><strong>音声検索</strong>：検索欄のマイクボタンによる音声検索です。音声の認識は端末に搭載された音声認識サービス（Googleなど）が行い、本アプリは認識結果の文字列だけを受け取ります。</p>
             </div>
           </div>
 
@@ -123,7 +134,29 @@
               <span class="icon" aria-hidden="true"></span>
             </button>
             <div class="faq-answer">
-              <p>車内に限らず、いつでもお使いいただけます。サウンドタブから28バンドイコライザー・トーン調整をそれぞれ設定できます。</p>
+              <p>車内に限らず、いつでもお使いいただけます。サウンドタブから28バンドイコライザー・トーン調整・車内音響補正カーブをそれぞれ設定できます。全画面プレーヤーの右上のボタンからは、ベース/トレブルだけをすぐに調整できます。</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              車内補正はどうやって使いますか
+              <span class="icon" aria-hidden="true"></span>
+            </button>
+            <div class="faq-answer">
+              <p>スマホを車のBluetoothオーディオにつなぎ、サウンドタブの「補正スキャン開始」を押します。車のスピーカーから測定用のスイープ音が流れ、スマホのマイクで車内の周波数特性を測って、補正カーブを自動で作ります（測定中は音楽が止まります）。</p>
+              <p>補正の効き具合は「精密・標準・マイルド」から選べ、「補正カーブを調整」で音楽を聴きながら手動で微調整することもできます。車によっては補正しない方が良い場合もあるので、そのときは「車内補正を解除」で無効にできます。</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              マイクのない車載AIBOXでも、車内補正を使えますか
+              <span class="icon" aria-hidden="true"></span>
+            </button>
+            <div class="faq-answer">
+              <p>はい（バージョン1.1.0以降）。スマホで測ったプロファイルを、サウンドタブの「補正をほかの端末へ送る」で補正ファイル（.cdsp）にして、Quick Share・Gmail・Googleドライブなどで送ります。AIBOX側では「補正ファイルを読み込む」で選ぶか、届いたファイルをこのアプリで開くと、プロファイルとして追加されます。</p>
+              <p>補正ファイルはiPhone版と共通なので、iPhoneで測った補正も使えます。補正ファイルには、プロファイル名・補正カーブ・イコライザーの値・測定した日時と端末の機種名が入ります。</p>
             </div>
           </div>
 
@@ -164,7 +197,10 @@
               <span class="icon" aria-hidden="true"></span>
             </button>
             <div class="faq-answer">
-              <p>接続方法や接続先の機器によって、出力されるサンプルレート等が変わる場合があります。DSP処理自体はどの接続方式でも動作します。</p>
+              <p>DSP処理（28バンドEQ・トーン調整・車内音響補正）は、どの接続方式でも動作します。出力されるサンプルレートは、接続先の機器によって変わります。</p>
+              <p>USB DACを接続した場合は、サウンドタブの「USB DAC直接出力」をオンにすると、Androidのミキサーを通さず、曲と同じサンプルレートのままDACへ送ります。アップサンプリング（44.1kHz系／48kHz系）を選ぶと、アプリ内の高精度な変換で、接続したDACが対応するいちばん高いレート（最大384kHz、44.1kHz系は最大352.8kHz）まで引き上げて出力します。全画面プレーヤーで、曲の形式と実際の出力レートを確認できます。</p>
+              <p>OPPOなど一部の機種では、USB DACをつなぐ前に本体の設定で「OTG接続」をオンにする必要があります。また、DACを抜き差しすると、使用許可をもう一度求められます。</p>
+              <p>Bluetooth接続では、Bluetoothの規格による上限があるため、出力できるサンプルレートは接続先のレシーバーの対応範囲に限られます。</p>
             </div>
           </div>
 
@@ -202,7 +238,7 @@
           </div>
           <div class="item">
             <div class="label">配信状況</div>
-            <div class="value">Google Play テスト配信準備中</div>
+            <div class="value">Google Play テスト配信中</div>
           </div>
           <div class="item">
             <div class="label">提供元</div>
