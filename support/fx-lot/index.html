@@ -81,9 +81,9 @@
             </button>
             <div class="faq-answer">
               <p>
-                口座資金・損失許容額（または許容%）・ストップロスまでのpips数・通貨ペアを入力すると、
-                その損失額に収まる適正ロット数をリアルタイムの為替レートをもとに自動計算します。
-                固定ロットでエントリーするのではなく、通貨ペアやストップロス幅に応じてロット数を調整することで、
+                証拠金（円）・リスク%・ストップ幅（pips）を入力し、通貨ベースを選んで「計算」を押すと、
+                損失がリスク%の範囲に収まる適正なロット数と、そのときの損失額（円）を、取得した最新の為替レートをもとに計算します。
+                固定ロットでエントリーするのではなく、通貨ペアやストップ幅に応じてロット数を調整することで、
                 トレードごとの損失額を一定に保つための資金管理ツールです。
               </p>
             </div>
@@ -91,11 +91,11 @@
 
           <div class="faq-item">
             <button class="faq-question">
-              対応している通貨ペア・口座タイプを教えてください
+              対応している通貨・口座を教えてください
               <span class="icon" aria-hidden="true"></span>
             </button>
             <div class="faq-answer">
-              <p>主要な通貨ペア（EUR/JPY、USD/JPY、GBP/JPY、AUD/JPY、NZD/JPY、CAD/JPY、CHF/JPY、SEK/JPY、NOK/JPY、SGD/JPY、THB/JPY、ZAR/JPY、USD/EUR、EUR/USD、GBP/USD、AUD/USD、NZD/USD、CAD/USD、CHF/USD、SEK/USD、NOK/USD、SGD/USD、THB/USD、ZAR/USD、USD/JPY、EUR/JPY、GBP/JPY、AUD/JPY、NZD/JPY、CAD/JPY、CHF/JPY、SEK/JPY、NOK/JPY、SGD/JPY、THB/JPY、ZAR/JPY）に対応しています。</p>
+              <p>通貨ペア名の右側の通貨（アプリ内では「通貨ベース」）が、JPY・USD・EUR・GBP・AUD・NZD・CHF・CAD・SEK・NOK・CNH・SGD・THB・ZARの14通貨のいずれかであれば、どの通貨ペアでも計算できます。たとえばUSD/JPYやEUR/JPYならJPY、EUR/USDやGBP/USDならUSD、EUR/GBPならGBPを選びます。証拠金・損失額は日本円で計算します。</p>
             </div>
           </div>
 
@@ -106,6 +106,16 @@
             </button>
             <div class="faq-answer">
               <p>本アプリの計算結果は参考値です。実際の発注前には、必ずご利用中のFX会社の取引ツールでも数値をご確認ください。</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              為替レートはいつの値ですか
+              <span class="icon" aria-hidden="true"></span>
+            </button>
+            <div class="faq-answer">
+              <p>アプリの起動時などにインターネット経由で最新のレートを取得し、画面に取得日時（価格更新日時）を表示しています。日時が古い場合は、インターネットに接続できる環境でアプリを開き直してください。</p>
             </div>
           </div>
 
@@ -130,7 +140,6 @@
           </div>
         </div>
 
-        <p class="placeholder-note" style="margin-top:24px;">※ 上記のFAQはサンプルです。実際のアプリ仕様に合わせて内容を見直してください。</p>
       </div>
     </section>
 
