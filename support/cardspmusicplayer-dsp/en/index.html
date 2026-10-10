@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How the Sound Is Shaped | CarDSPMusicPlayer</title>
+  <meta name="description" content="How the equalizer, bass/treble, auto trim and limiter in CarDSPMusicPlayer (iPhone and Android) work, explained with graphs computed from the app's actual formulas." />
+  <link rel="alternate" hreflang="ja" href="https://yoh-tech.github.io/support/cardspmusicplayer-dsp/" />
+  <link rel="alternate" hreflang="en" href="https://yoh-tech.github.io/support/cardspmusicplayer-dsp/en/" />
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../../assets/css/style.css" />
+  <link rel="stylesheet" href="../dsp.css" />
+</head>
+<body>
+  <div class="bg-glow"></div>
+  <div class="bg-grid"></div>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a href="../../../en/" class="logo">
+        <span class="logo-mark" aria-hidden="true"></span>
+        YOH-TECH Corp.
+        <small>Studio</small>
+      </a>
+      <nav class="main-nav">
+        <a href="../../../en/#apps">Apps</a>
+        <a href="../../../en/#about">About</a>
+        <a href="../../en/">Support</a>
+        <a href="../../../en/#contact">Contact</a>
+        <a href="../" lang="ja" hreflang="ja">日本語</a>
+      </nav>
+      <button class="nav-toggle" aria-label="Open menu">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M2 4.5H16M2 9H16M2 13.5H16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <div class="breadcrumb reveal">
+        <a href="../../../en/">YOH-TECH Corp.</a> / <a href="../../en/">Support</a> / CarDSPMusicPlayer: How the sound is shaped
+      </div>
+
+      <div class="dsp-hero reveal delay-1">
+        <span class="kicker">How the sound is shaped</span>
+        <h1>How the sound is shaped</h1>
+        <p class="lead">
+          This page explains, with graphs, how CarDSPMusicPlayer changes the sound with its equalizer and bass/treble controls.
+          Every graph is drawn live from the same formulas the app actually uses. Move the sliders and see how the response changes.
+        </p>
+        <div class="platform-links">
+          <a href="../../cardspmusicplayer/en/" class="btn btn-ghost btn-sm">iPhone support</a>
+          <a href="../../cardspmusicplayer-android/en/" class="btn btn-ghost btn-sm">Android support</a>
+        </div>
+        <p class="scope-note">
+          Everything on this page applies to both the iPhone and Android versions. For features found in only one version (such as in-car acoustic correction on iPhone, or loudness normalization and silence trimming on Android), see each version's support page.
+        </p>
+      </div>
+
+      <nav class="toc reveal delay-2" aria-label="Contents">
+        <a href="#flow">1. Signal flow</a>
+        <a href="#freq">2. What is frequency?</a>
+        <a href="#series">3. Stacked, not split</a>
+        <a href="#bell">4. The bell filter</a>
+        <a href="#geq">5. Stacking 28 bands</a>
+        <a href="#shelf">6. Bass / treble</a>
+        <a href="#db">7. A feel for dB</a>
+        <a href="#trim">8. Auto trim</a>
+        <a href="#limiter">9. Limiter</a>
+        <a href="#summary">10. Summary</a>
+      </nav>
+
+      <!-- 1 ------------------------------------------------------------- -->
+      <section id="flow" class="dsp-section">
+        <h2><span class="num">1</span>Signal flow</h2>
+        <p>On its way to your speakers or earphones, the audio is processed in this order.</p>
+        <ol class="flow">
+          <li class="flow-io">Song data</li>
+          <li><strong>28-band equalizer</strong><span>Raises or lowers the level at 28 individual frequencies</span></li>
+          <li><strong>Bass / treble</strong><span>Raises or lowers the whole low end or the whole high end at once</span></li>
+          <li><strong>Auto trim</strong><span>If you boost too much, automatically lowers the overall level a little</span></li>
+          <li class="flow-always"><strong>Limiter</strong><span>The final safety net. Holds peaks down just before they would clip (always active)</span></li>
+          <li class="flow-io">Speakers / earphones</li>
+        </ol>
+        <p class="note">
+          Turning the equalizer off bypasses the equalizer, bass/treble and auto trim together. The limiter is always active.
+          The iPhone version always lowers the level by 6 dB at the input to create headroom before processing.
+        </p>
+      </section>
+
+      <!-- 2 ------------------------------------------------------------- -->
+      <section id="freq" class="dsp-section">
+        <h2><span class="num">2</span>Pitch and "frequency"</h2>
+        <p>
+          Sound is a vibration of the air. The number of vibrations per second is called the <strong>frequency (Hz, hertz)</strong>: the fewer, the lower the sound; the more, the higher.
+          Human hearing covers roughly 20 Hz to 20,000 Hz (20 kHz).
+        </p>
+        <div class="freq-strip" role="img" aria-label="Frequency bands: 20 Hz to 150 Hz is the low range, 150 Hz to 4 kHz the midrange, 4 kHz to 20 kHz the high range">
+          <div class="freq-zone low"><b>Lows</b><span>Kick drum, bass</span></div>
+          <div class="freq-zone mid"><b>Mids</b><span>Vocals, piano, guitar</span></div>
+          <div class="freq-zone high"><b>Highs</b><span>Cymbals, air</span></div>
+        </div>
+        <div class="freq-scale" aria-hidden="true">
+          <span style="left:0%">20Hz</span><span style="left:33.3%">200Hz</span><span style="left:66.7%">2kHz</span><span style="left:100%">20kHz</span>
+        </div>
+        <p class="note">
+          Doubling the frequency raises the pitch by one octave (from one C on the piano to the next). That's why the horizontal axis of the graphs on this page is logarithmic — spaced by doublings rather than evenly.
+        </p>
+      </section>
+
+      <!-- 3 ------------------------------------------------------------- -->
+      <section id="series" class="dsp-section">
+        <h2><span class="num">3</span>Stacked, not split</h2>
+        <p>
+          When you hear "equalizer", you might imagine the sound being split into 28 pieces, each adjusted in level and then mixed back together.
+          A car audio crossover (channel divider) really does work that way, sending the lows to the woofer and the highs to the tweeter.
+        </p>
+        <p>
+          This app's equalizer <strong>does not split the sound. It passes a single signal through 28 filters in series.</strong>
+          Each filter changes only the region around its own frequency and lets almost everything else through untouched — like shining light through 28 stacked sheets of tinted, transparent film.
+        </p>
+        <div class="compare">
+          <figure class="compare-item muted">
+            <figcaption>Split and remix (not this app)</figcaption>
+            <svg viewBox="0 0 320 130" role="img" aria-label="Diagram: the sound is split into low, mid and high, each adjusted, then mixed back together">
+              <g class="sch">
+                <rect x="4" y="50" width="54" height="30" rx="8"/><text x="31" y="69">In</text>
+                <path d="M58 65 L90 25 M58 65 L90 65 M58 65 L90 105"/>
+                <rect x="90" y="10" width="70" height="30" rx="8"/><text x="125" y="29">Low</text>
+                <rect x="90" y="50" width="70" height="30" rx="8"/><text x="125" y="69">Mid</text>
+                <rect x="90" y="90" width="70" height="30" rx="8"/><text x="125" y="109">High</text>
+                <path d="M160 25 L200 65 M160 65 L200 65 M160 105 L200 65"/>
+                <circle cx="206" cy="65" r="7"/>
+                <path d="M213 65 L250 65"/>
+                <rect x="250" y="50" width="66" height="30" rx="8"/><text x="283" y="69">Out</text>
+              </g>
+            </svg>
+          </figure>
+          <figure class="compare-item">
+            <figcaption>This app: one signal through 28 filters in series</figcaption>
+            <svg viewBox="0 0 320 130" role="img" aria-label="Diagram: the sound stays a single signal and passes through 28 filters in order">
+              <g class="sch on">
+                <rect x="4" y="50" width="44" height="30" rx="8"/><text x="26" y="69">In</text>
+                <path d="M48 65 L64 65"/>
+                <rect x="64" y="40" width="22" height="50" rx="5"/>
+                <path d="M86 65 L94 65"/>
+                <rect x="94" y="40" width="22" height="50" rx="5"/>
+                <path d="M116 65 L124 65"/>
+                <rect x="124" y="40" width="22" height="50" rx="5"/>
+                <text x="178" y="69" class="dots">…</text>
+                <path d="M200 65 L208 65"/>
+                <rect x="208" y="40" width="22" height="50" rx="5"/>
+                <path d="M230 65 L262 65"/>
+                <rect x="262" y="50" width="54" height="30" rx="8"/><text x="289" y="69">Out</text>
+                <text x="75" y="104" class="small">1</text><text x="105" y="104" class="small">2</text><text x="135" y="104" class="small">3</text><text x="219" y="104" class="small">28</text>
+              </g>
+            </svg>
+          </figure>
+        </div>
+        <ul class="points">
+          <li>No "seams" from remixing — phase misalignment or dips at the crossover points are much less likely</li>
+          <li>With every band at 0 dB (Flat), the filters do nothing at all, and the original sound passes through unchanged</li>
+        </ul>
+      </section>
+
+      <!-- 4 ------------------------------------------------------------- -->
+      <section id="bell" class="dsp-section">
+        <h2><span class="num">4</span>Each filter is a "bell"</h2>
+        <p>
+          All 28 filters are <strong>bell-shaped</strong> (technically, peaking filters).
+          The change is greatest at the filter's own center frequency and tapers smoothly back to 0 dB the farther you move away from it.
+          A boost makes a peak; a cut makes a dip.
+        </p>
+        <div class="chart-card">
+          <div class="controls">
+            <label>Center frequency
+              <select id="bell-freq"></select>
+            </label>
+            <label class="slider">Gain <output id="bell-gain-out">+6.0 dB</output>
+              <input type="range" id="bell-gain" min="-8.5" max="8.5" step="0.5" value="6" />
+            </label>
+          </div>
+          <div class="chart" id="chart-bell"></div>
+          <p class="chart-caption">The change at each frequency when only this band is moved. The bell width (Q) is 4.3 for every band. Each band can be adjusted by ±8.5 dB.</p>
+          <details class="data-table" data-for="chart-bell"><summary>Show the numbers</summary><div></div></details>
+        </div>
+      </section>
+
+      <!-- 5 ------------------------------------------------------------- -->
+      <section id="geq" class="dsp-section">
+        <h2><span class="num">5</span>Stacking 28 bells</h2>
+        <p>
+          The 28 bands are spaced at <strong>1/3-octave intervals</strong> (three per octave) from 31.5 Hz to 16 kHz.
+          Neighboring bells are wide enough for their skirts to overlap, so the 28 stacked together form one continuous curve.
+        </p>
+        <div class="chart-card">
+          <div class="controls">
+            <div class="seg" role="group" aria-label="Example curves">
+              <button type="button" data-geq="smile" class="is-on">Lift lows and highs</button>
+              <button type="button" data-geq="vocal">Bring vocals forward</button>
+              <button type="button" data-geq="clear">Remove muddiness</button>
+            </div>
+          </div>
+          <div class="chart" id="chart-geq"></div>
+          <div class="legend" id="legend-geq"></div>
+          <p class="chart-caption">The thin lines are the 28 individual bells; the thick line is the result of stacking them all. The example curves are for illustration and differ from the app's presets.</p>
+          <p class="chart-caption">
+            Look closely and you'll see a small ripple in the combined result: the response sags slightly between bells, and neighboring skirts add up.
+            For example, setting every band to +3 dB actually gives about +3.8 to +4.9 dB (a ripple of about 1 dB). This is normal behavior for a design that prioritizes the precision of each individual band.
+          </p>
+          <details class="data-table" data-for="chart-geq"><summary>Show the numbers</summary><div></div></details>
+        </div>
+        <div class="band-table">
+          <div><b>31.5–125 Hz</b><span>Kick drum, the core of the bass, impact</span></div>
+          <div><b>160–630 Hz</b><span>Body and warmth. Too much sounds "muddy"</span></div>
+          <div><b>800 Hz–2.5 kHz</b><span>The center of vocals and melody</span></div>
+          <div><b>3.15–6.3 kHz</b><span>Clarity and presence. Too much sounds harsh</span></div>
+          <div><b>8–16 kHz</b><span>Sparkle and air</span></div>
+        </div>
+      </section>
+
+      <!-- 6 ------------------------------------------------------------- -->
+      <section id="shelf" class="dsp-section">
+        <h2><span class="num">6</span>Bass / treble are "shelves"</h2>
+        <p>
+          Bass and treble are not bells but <strong>shelving filters</strong>. Beyond a corner frequency, they raise or lower everything in one go.
+          It's the same idea as the BASS and TREBLE knobs on a classic amplifier.
+          Use the 28 bands to shape the details, and bass/treble to set the overall tilt.
+        </p>
+        <div class="chart-card">
+          <div class="controls">
+            <label class="slider">Bass (below 150 Hz) <output id="bass-out">+6.0 dB</output>
+              <input type="range" id="bass" min="-8.5" max="8.5" step="0.5" value="6" />
+            </label>
+            <label class="slider">Treble (above 4 kHz) <output id="treble-out">+4.0 dB</output>
+              <input type="range" id="treble" min="-8.5" max="8.5" step="0.5" value="4" />
+            </label>
+          </div>
+          <div class="chart" id="chart-shelf"></div>
+          <div class="legend" id="legend-shelf"></div>
+          <p class="chart-caption">Bass lifts (or lowers) everything below 150 Hz, and treble everything above 4 kHz, like a flat shelf. Both range ±8.5 dB. Used together with the 28 bands, the effects add up.</p>
+          <details class="data-table" data-for="chart-shelf"><summary>Show the numbers</summary><div></div></details>
+        </div>
+      </section>
+
+      <!-- 7 ------------------------------------------------------------- -->
+      <section id="db" class="dsp-section">
+        <h2><span class="num">7</span>A feel for "dB" (decibels)</h2>
+        <p>Level changes are expressed in dB. They're convenient because you can simply add them, but the actual amplitude changes by multiplication.</p>
+        <div class="table-wrap">
+          <table class="dsp-table">
+            <thead><tr><th>Change</th><th>Amplitude</th><th>Perceived loudness (approx.)</th></tr></thead>
+            <tbody>
+              <tr><td>+1dB</td><td>about 1.12×</td><td>Barely noticeable</td></tr>
+              <tr><td>+3dB</td><td>about 1.4×</td><td>A little louder</td></tr>
+              <tr><td>+6dB</td><td>about 2×</td><td>Clearly louder</td></tr>
+              <tr><td>+8.5dB</td><td>about 2.7×</td><td>Much louder (the per-band maximum)</td></tr>
+              <tr><td>+10dB</td><td>about 3.2×</td><td>Sounds about twice as loud</td></tr>
+              <tr><td>−6dB</td><td>about 0.5×</td><td>Clearly quieter</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 8 ------------------------------------------------------------- -->
+      <section id="trim" class="dsp-section">
+        <h2><span class="num">8</span>"Auto trim" prevents over-boosting</h2>
+        <p>
+          Digital audio has a ceiling (0 dBFS) beyond which nothing can be represented. Anything above it is chopped off, producing harsh clipping distortion.
+          Many recent recordings are already mastered close to that ceiling, so a large EQ boost pushes them over it very quickly.
+        </p>
+        <p>
+          So the app <strong>automatically lowers the overall level by just enough whenever the highest boost would exceed +9 dB.</strong>
+          The highest boost is calculated including any overlap with bass/treble. Lowering the overall level does not change the <strong>shape</strong> of the curve.
+        </p>
+        <div class="chart-card">
+          <div class="controls">
+            <label class="slider">63 Hz band <output id="trim-band-out">+8.5 dB</output>
+              <input type="range" id="trim-band" min="-8.5" max="8.5" step="0.5" value="8.5" />
+            </label>
+            <label class="slider">Bass <output id="trim-bass-out">+8.5 dB</output>
+              <input type="range" id="trim-bass" min="-8.5" max="8.5" step="0.5" value="8.5" />
+            </label>
+          </div>
+          <div class="trim-readout" id="trim-readout" aria-live="polite"></div>
+          <div class="chart" id="chart-trim"></div>
+          <div class="legend" id="legend-trim"></div>
+          <p class="chart-caption">The dashed line is the curve as adjusted; the solid line is the curve after auto trim has lowered the overall level. The reduction is at most 18 dB, and it never raises the level.</p>
+          <details class="data-table" data-for="chart-trim"><summary>Show the numbers</summary><div></div></details>
+        </div>
+      </section>
+
+      <!-- 9 ------------------------------------------------------------- -->
+      <section id="limiter" class="dsp-section">
+        <h2><span class="num">9</span>The final safety net: a look-ahead limiter</h2>
+        <p>
+          Auto trim is calculated from the shape of the curve, so it can't catch momentary peaks in the music (such as drum attacks).
+          That's why a <strong>limiter</strong> is always running at the very end.
+          It looks 3 ms ahead and starts reducing the gain smoothly just before a loud peak arrives.
+        </p>
+        <div class="chart-card">
+          <div class="controls">
+            <label class="slider">Input level <output id="lim-drive-out">+3.0 dB</output>
+              <input type="range" id="lim-drive" min="-6" max="9" step="0.5" value="3" />
+            </label>
+          </div>
+          <div class="chart" id="chart-limiter"></div>
+          <div class="legend" id="legend-limiter"></div>
+          <p class="chart-caption">
+            Using a sound like two drum hits as an example, this compares the level before and after the limiter (peak per millisecond).
+            Only the parts that would exceed −2 dB are reduced, and the output never exceeds −1 dB. The output is delayed by the look-ahead (3 ms), but the two are aligned here for easy comparison.
+          </p>
+          <details class="data-table" data-for="chart-limiter"><summary>Show the numbers</summary><div></div></details>
+        </div>
+        <div class="table-wrap">
+          <table class="dsp-table">
+            <thead><tr><th>Parameter</th><th>Value</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td>Threshold</td><td>−2dB</td><td>Only peaks that would exceed this are smoothly reduced</td></tr>
+              <tr><td>Ceiling</td><td>−1dB</td><td>Nothing is output above this level</td></tr>
+              <tr><td>Look-ahead</td><td>3 ms</td><td>Prepares before a loud peak arrives</td></tr>
+              <tr><td>Attack</td><td>1 ms</td><td>Reacts quickly to loud peaks</td></tr>
+              <tr><td>Release</td><td>100 ms</td><td>Recovers slowly so the level doesn't pump unnaturally</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">
+          With tracks that are mastered right up to the ceiling (much recent pop and some live albums), the limiter works continuously, so the sound may seem slightly flattened or compressed. This comes from how the track was mastered — it is not a fault.
+        </p>
+      </section>
+
+      <!-- 10 ------------------------------------------------------------ -->
+      <section id="summary" class="dsp-section">
+        <h2><span class="num">10</span>Summary</h2>
+        <div class="table-wrap">
+          <table class="dsp-table">
+            <thead><tr><th>Stage</th><th>What it does</th><th>Key values</th><th>When active</th></tr></thead>
+            <tbody>
+              <tr><td>28-band equalizer</td><td>Bell-shaped boost/cut at 28 frequencies</td><td>31.5 Hz–16 kHz, 1/3 octave, Q = 4.3, ±8.5 dB</td><td>When the EQ is on</td></tr>
+              <tr><td>Bass</td><td>Boosts/cuts the low end as a whole</td><td>Below 150 Hz, ±8.5 dB</td><td>When the EQ is on</td></tr>
+              <tr><td>Treble</td><td>Boosts/cuts the high end as a whole</td><td>Above 4 kHz, ±8.5 dB</td><td>When the EQ is on</td></tr>
+              <tr><td>Auto trim</td><td>Lowers the overall level if boosted too much</td><td>By the amount above +9 dB, up to −18 dB</td><td>When the EQ is on</td></tr>
+              <tr><td>Limiter</td><td>Holds down momentary peaks</td><td>Threshold −2 dB, ceiling −1 dB, 3 ms look-ahead</td><td>Always</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          All processing is done digitally in 32-bit floating point. Because no analog circuitry (resistors, capacitors) is involved, there is no component tolerance or temperature drift — the result is always exactly the same.
+        </p>
+        <div class="platform-links">
+          <a href="../../cardspmusicplayer/en/" class="btn btn-ghost btn-sm">iPhone support</a>
+          <a href="../../cardspmusicplayer-android/en/" class="btn btn-ghost btn-sm">Android support</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="copyright">&copy; 2026 YOH-TECH Corp.. All rights reserved.</div>
+      <div class="footer-links">
+        <a href="../../../en/">Home</a>
+        <a href="../../en/">All support pages</a>
+        <a href="../../cardspmusicplayer/en/">iPhone</a>
+        <a href="../../cardspmusicplayer-android/en/">Android</a>
+        <a href="../" lang="ja" hreflang="ja">日本語</a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="chart-tip" id="chart-tip" role="status" aria-live="polite"></div>
+
+  <script src="../../../assets/js/main.js"></script>
+  <script src="../dsp.js"></script>
+  <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "929501862b9c499aae48912f42ecf68f"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

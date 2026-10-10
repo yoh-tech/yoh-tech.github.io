@@ -20,6 +20,10 @@
   const LIM_THRESHOLD = Math.pow(10, -2 / 20);
   const LIM_CEILING = Math.pow(10, -1 / 20);
 
+  // UI strings follow the page language (<html lang="en"> for the English page).
+  const EN = document.documentElement.lang === "en";
+  const tr = (ja, en) => (EN ? en : ja);
+
   const C1 = "#8f73ff";
   const C2 = "#27a89e";
   const GHOST = "rgba(237,240,247,0.28)";
@@ -256,14 +260,14 @@
     });
     const gain = document.getElementById("bell-gain");
     const out = document.getElementById("bell-gain-out");
-    const chart = freqChart("chart-bell", "1バンドのベル型フィルターの周波数特性");
+    const chart = freqChart("chart-bell", tr("1バンドのベル型フィルターの周波数特性", "Frequency response of a single-band bell filter"));
     const render = () => {
       const f0 = BANDS[+sel.value], g = +gain.value;
       out.textContent = fmtDb(g);
       const ys = response([peaking(f0, GEQ_Q, g)]);
       const peakI = labelIndexNear(f0);
-      const s = { name: `${LABELS[+sel.value]}Hz のバンド`, xs: FREQS, ys, color: C1, width: 2.5,
-        label: g >= 0 ? "ブースト" : "カット", labelAt: peakI, labelDx: 10, labelDy: g >= 0 ? 4 : 14 };
+      const s = { name: tr(`${LABELS[+sel.value]}Hz のバンド`, `${LABELS[+sel.value]}Hz band`), xs: FREQS, ys, color: C1, width: 2.5,
+        label: g >= 0 ? tr("ブースト", "Boost") : tr("カット", "Cut"), labelAt: peakI, labelDx: 10, labelDy: g >= 0 ? 4 : 14 };
       chart.draw([s], [{ y: 0, solid: true }]);
       fillTable("chart-bell", [s]);
     };
@@ -279,10 +283,10 @@
       vocal: [-2, -2, -1.5, -1, -0.5, 0, 0, 0, 0, 0, 0, 0.5, 1, 1.5, 2, 2.5, 3, 3, 3, 3, 2.5, 2, 1, 0.5, 0, 0, 0, 0],
       clear: [0, 0, 0, 0, 0, 0, -0.5, -1.5, -2.5, -3, -3, -2.5, -1.5, -0.5, 0, 0, 0, 0, 0.5, 1, 1, 1, 1, 0.5, 0.5, 0.5, 0.5, 0],
     };
-    const chart = freqChart("chart-geq", "28バンドのベルと、それを重ねた合計の周波数特性", -9, 9, [-9, -6, -3, 0, 3, 6, 9]);
+    const chart = freqChart("chart-geq", tr("28バンドのベルと、それを重ねた合計の周波数特性", "Frequency response of the 28 bells and their combined sum"), -9, 9, [-9, -6, -3, 0, 3, 6, 9]);
     legend("legend-geq", [
-      { name: "28枚それぞれのベル", color: GHOST, cls: "thin" },
-      { name: "重ねた結果", color: C1 },
+      { name: tr("28枚それぞれのベル", "Each of the 28 bells"), color: GHOST, cls: "thin" },
+      { name: tr("重ねた結果", "Combined result"), color: C1 },
     ]);
     const render = (key) => {
       const gains = EXAMPLES[key];
@@ -290,7 +294,7 @@
       const bells = filters.map((co, i) => ({
         name: LABELS[i], xs: FREQS, ys: FREQS.map((f) => magDb(co, f)), color: GHOST, width: 1, tip: false,
       }));
-      const sum = { name: "重ねた結果", xs: FREQS, ys: response(filters), color: C1, width: 2.5 };
+      const sum = { name: tr("重ねた結果", "Combined result"), xs: FREQS, ys: response(filters), color: C1, width: 2.5 };
       chart.draw([...bells, sum], [{ y: 0, solid: true }]);
       fillTable("chart-geq", [sum]);
     };
@@ -305,16 +309,16 @@
   (() => {
     const bass = document.getElementById("bass"), treble = document.getElementById("treble");
     const bOut = document.getElementById("bass-out"), tOut = document.getElementById("treble-out");
-    const chart = freqChart("chart-shelf", "ベースとトレブルの棚型フィルターの周波数特性");
-    legend("legend-shelf", [{ name: "ベース", color: C1 }, { name: "トレブル", color: C2 }]);
+    const chart = freqChart("chart-shelf", tr("ベースとトレブルの棚型フィルターの周波数特性", "Frequency response of the bass and treble shelving filters"));
+    legend("legend-shelf", [{ name: tr("ベース", "Bass"), color: C1 }, { name: tr("トレブル", "Treble"), color: C2 }]);
     const render = () => {
       const gb = +bass.value, gt = +treble.value;
       bOut.textContent = fmtDb(gb);
       tOut.textContent = fmtDb(gt);
-      const sb = { name: "ベース", xs: FREQS, ys: response([lowShelf(BASS_HZ, SHELF_Q, gb)]), color: C1, width: 2.5,
-        label: "ベース", labelAt: labelIndexNear(40), labelDy: gb >= 0 ? -10 : 18 };
-      const st = { name: "トレブル", xs: FREQS, ys: response([highShelf(TREBLE_HZ, SHELF_Q, gt)]), color: C2, width: 2.5,
-        label: "トレブル", labelAt: labelIndexNear(9000), labelDy: gt >= 0 ? -10 : 18 };
+      const sb = { name: tr("ベース", "Bass"), xs: FREQS, ys: response([lowShelf(BASS_HZ, SHELF_Q, gb)]), color: C1, width: 2.5,
+        label: tr("ベース", "Bass"), labelAt: labelIndexNear(40), labelDy: gb >= 0 ? -10 : 18 };
+      const st = { name: tr("トレブル", "Treble"), xs: FREQS, ys: response([highShelf(TREBLE_HZ, SHELF_Q, gt)]), color: C2, width: 2.5,
+        label: tr("トレブル", "Treble"), labelAt: labelIndexNear(9000), labelDy: gt >= 0 ? -10 : 18 };
       chart.draw([sb, st], [{ y: 0, solid: true }]);
       fillTable("chart-shelf", [sb, st]);
     };
@@ -328,10 +332,10 @@
     const band = document.getElementById("trim-band"), bass = document.getElementById("trim-bass");
     const bOut = document.getElementById("trim-band-out"), sOut = document.getElementById("trim-bass-out");
     const readout = document.getElementById("trim-readout");
-    const chart = freqChart("chart-trim", "オートトリムの前後の周波数特性", -12, 18, [-12, -6, 0, 6, 12, 18]);
+    const chart = freqChart("chart-trim", tr("オートトリムの前後の周波数特性", "Frequency response before and after auto trim"), -12, 18, [-12, -6, 0, 6, 12, 18]);
     legend("legend-trim", [
-      { name: "調整したまま", color: GHOST, cls: "dashed" },
-      { name: "オートトリム後（実際の音）", color: C1 },
+      { name: tr("調整したまま", "As adjusted"), color: GHOST, cls: "dashed" },
+      { name: tr("オートトリム後（実際の音）", "After auto trim (what you hear)"), color: C1 },
     ]);
     const idx63 = BANDS.indexOf(63);
     const render = () => {
@@ -347,13 +351,13 @@
       });
       const trim = Math.max(TRIM_MIN_DB, Math.min(0, SAFE_CEILING_DB - maxGain));
       readout.innerHTML =
-        `<div><small>一番持ち上がっているところ</small><b>${fmtDb(maxGain)}</b></div>` +
-        `<div><small>上限</small><b>+9.0 dB</b></div>` +
-        `<div><small>オートトリム（全体を下げる量）</small><b style="color:${trim < 0 ? C1 : "inherit"}">${trim < 0 ? fmtDb(trim) : "なし"}</b></div>`;
+        `<div><small>${tr("一番持ち上がっているところ", "Highest boost")}</small><b>${fmtDb(maxGain)}</b></div>` +
+        `<div><small>${tr("上限", "Limit")}</small><b>+9.0 dB</b></div>` +
+        `<div><small>${tr("オートトリム（全体を下げる量）", "Auto trim (overall level reduction)")}</small><b style="color:${trim < 0 ? C1 : "inherit"}">${trim < 0 ? fmtDb(trim) : tr("なし", "None")}</b></div>`;
       const before = response([peaking(63, GEQ_Q, g), lowShelf(BASS_HZ, SHELF_Q, s)]);
-      const sBefore = { name: "調整したまま", xs: FREQS, ys: before, color: GHOST, width: 2, dash: "6 5" };
-      const sAfter = { name: "オートトリム後", xs: FREQS, ys: before.map((v) => v + trim), color: C1, width: 2.5 };
-      chart.draw([sBefore, sAfter], [{ y: 0, solid: true }, { y: SAFE_CEILING_DB, label: "+9dB（上限の目安）" }]);
+      const sBefore = { name: tr("調整したまま", "As adjusted"), xs: FREQS, ys: before, color: GHOST, width: 2, dash: "6 5" };
+      const sAfter = { name: tr("オートトリム後", "After auto trim"), xs: FREQS, ys: before.map((v) => v + trim), color: C1, width: 2.5 };
+      chart.draw([sBefore, sAfter], [{ y: 0, solid: true }, { y: SAFE_CEILING_DB, label: tr("+9dB（上限の目安）", "+9 dB (limit)") }]);
       fillTable("chart-trim", [sBefore, sAfter]);
     };
     band.addEventListener("input", render);
@@ -371,12 +375,12 @@
       x: "lin", xMin: 0, xMax: DUR * 1000, yMin: -12, yMax: 9, yTicks: [-12, -9, -6, -3, 0, 3, 6, 9],
       xTicks: [[0, "0"], [100, "100"], [200, "200"], [300, "300"], [400, "400"]],
       yTicksNarrow: [-12, -6, 0, 6],
-      xTitle: "ミリ秒", yTitle: "dB", ariaLabel: "リミッターの前後の音の大きさの時間変化",
-      xFmt: (ms) => `${Math.round(ms)} ミリ秒`, valFmt: fmtDbFs,
+      xTitle: tr("ミリ秒", "ms"), yTitle: "dB", ariaLabel: tr("リミッターの前後の音の大きさの時間変化", "Level over time before and after the limiter"),
+      xFmt: (ms) => tr(`${Math.round(ms)} ミリ秒`, `${Math.round(ms)} ms`), valFmt: fmtDbFs,
     });
     legend("legend-limiter", [
-      { name: "リミッターに入る前", color: GHOST, cls: "dashed" },
-      { name: "リミッターを通った後", color: C2 },
+      { name: tr("リミッターに入る前", "Limiter input"), color: GHOST, cls: "dashed" },
+      { name: tr("リミッターを通った後", "Limiter output"), color: C2 },
     ]);
     // Amplitude envelope: a steady body plus two drum hits (2ms attack, ~50ms decay),
     // scaled so the first hit peaks at 0dB when the slider is at 0dB.
@@ -423,15 +427,15 @@
         inDb.push(20 * Math.log10(Math.max(pi, 1e-6)));
         outDb.push(20 * Math.log10(Math.max(po, 1e-6)));
       }
-      const sIn = { name: "入る前", xs: xsMs, ys: inDb, color: GHOST, width: 2, dash: "6 5" };
-      const sOut = { name: "通った後", xs: xsMs, ys: outDb, color: C2, width: 2.5 };
+      const sIn = { name: tr("入る前", "Input"), xs: xsMs, ys: inDb, color: GHOST, width: 2, dash: "6 5" };
+      const sOut = { name: tr("通った後", "Output"), xs: xsMs, ys: outDb, color: C2, width: 2.5 };
       chart.draw([sIn, sOut], [
-        { y: 0, label: "0dB（デジタルの天井）" },
+        { y: 0, label: tr("0dB（デジタルの天井）", "0 dBFS (digital full scale)") },
         { y: -1, solid: true, label: "" },
-        { y: -2, label: "−2dB（押さえ始める）" },
+        { y: -2, label: tr("−2dB（押さえ始める）", "−2 dB (threshold)") },
       ]);
       fillTable("chart-limiter", [sIn, sOut], [50, 100, 110, 150, 200, 260, 270, 300, 350],
-        (v) => `${v} ミリ秒`, fmtDbFs);
+        (v) => tr(`${v} ミリ秒`, `${v} ms`), fmtDbFs);
     };
     drive.addEventListener("input", render);
     render();

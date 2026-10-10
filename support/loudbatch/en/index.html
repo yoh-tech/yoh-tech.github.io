@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LoudBatch | Loudness checker for CarDSPMusicPlayer (Android)</title>
+  <meta name="description" content="A loudness checker for Mac, made for CarDSPMusicPlayer (Android). Analyzes the loudness of your whole music library in one go and exports per-song gain values to a CSV file." />
+  <link rel="alternate" hreflang="ja" href="https://yoh-tech.github.io/support/loudbatch/" />
+  <link rel="alternate" hreflang="en" href="https://yoh-tech.github.io/support/loudbatch/en/" />
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../../assets/css/style.css" />
+  <link rel="stylesheet" href="../loudbatch.css" />
+</head>
+<body>
+  <div class="bg-glow"></div>
+  <div class="bg-grid"></div>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a href="../../../en/" class="logo">
+        <span class="logo-mark" aria-hidden="true"></span>
+        YOH-TECH Corp.
+        <small>Studio</small>
+      </a>
+      <nav class="main-nav">
+        <a href="../../../en/#apps">Apps</a>
+        <a href="../../../en/#about">About</a>
+        <a href="../../en/">Support</a>
+        <a href="../../../en/#contact">Contact</a>
+        <a href="../" lang="ja" hreflang="ja">日本語</a>
+      </nav>
+      <button class="nav-toggle" aria-label="Open menu">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M2 4.5H16M2 9H16M2 13.5H16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <div class="breadcrumb reveal">
+        <a href="../../../en/">YOH-TECH Corp.</a> / <a href="../../en/">Support</a> / <a href="../../cardspmusicplayer-android/en/">CarDSPMusicPlayer (Android)</a> / LoudBatch
+      </div>
+
+      <div class="lb-hero">
+        <div class="reveal delay-1">
+          <span class="tag">Mac App · Free</span>
+          <h1>LoudBatch</h1>
+          <p class="for">Loudness checker for <span>CarDSPMusicPlayer (Android)</span></p>
+          <p>
+            Measures the loudness of your entire music library on your Mac in one go, and writes a gain value for each song to a CSV file.
+            Import that CSV into CarDSPMusicPlayer, and the time-consuming "Loudness normalization" analysis on your device is finished instantly.
+          </p>
+          <div class="lb-download">
+            <a href="../LoudBatch-0.1.dmg" class="btn btn-primary">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v8m0 0L4.5 6.5M8 10l3.5-3.5M2.5 13h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Download for Mac
+            </a>
+            <p class="meta">
+              <strong class="free">Free download</strong><br>
+              Version <span class="num">0.1</span> · <span class="num">7.5 MB</span> (.dmg)<br>
+              macOS 14 or later · Apple silicon / Intel
+            </p>
+          </div>
+        </div>
+
+        <!-- Example of gains toward a −18 LUFS target. Scale is −30 to −6 LUFS -->
+        <figure class="lb-meter reveal delay-2" aria-label="Example result: measured loudness of each song and the gain needed to reach the −18 LUFS target">
+          <div class="lb-meter-head">
+            <span class="title">Example result</span>
+            <span class="goal">Target −18 LUFS</span>
+          </div>
+          <div class="lb-scale" aria-hidden="true">
+            <span style="left:0%">−30</span>
+            <span style="left:25%">−24</span>
+            <span style="left:50%">−18</span>
+            <span style="left:75%">−12</span>
+            <span style="left:100%">−6</span>
+          </div>
+          <div class="lb-rows" id="lb-rows"></div>
+          <div class="lb-meter-foot">
+            <span><i style="background:var(--boost)"></i>Boost (quietly recorded songs)</span>
+            <span><i style="background:var(--cut)"></i>Cut (heavily compressed, loud songs)</span>
+          </div>
+        </figure>
+      </div>
+    </div>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <span class="kicker">Why</span>
+          <h2>Let your Mac do the heavy analysis</h2>
+          <p>
+            Songs ripped from old CDs and recent, loudly mastered songs sound very different in level at the same volume setting.
+            CarDSPMusicPlayer corrects this automatically, but it analyzes songs a little at a time so as not to disturb playback, so a large library takes a long time.
+          </p>
+        </div>
+        <div class="lb-compare">
+          <div class="item">
+            <p class="who">Analysis on the device only</p>
+            <p class="big">Days to a week</p>
+            <p>For about 10,000 songs. A car head unit takes tens of seconds per song.</p>
+          </div>
+          <div class="item mac">
+            <p class="who">Analysis with LoudBatch (Mac)</p>
+            <p class="big">Tens of minutes</p>
+            <p>Tested with a library of about 14,000 songs. Several songs are analyzed in parallel.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <span class="kicker">How to use</span>
+          <h2>How to use</h2>
+        </div>
+        <ol class="lb-steps">
+          <li>
+            <h3>Install</h3>
+            <p>Open the downloaded .dmg and drag LoudBatch into your Applications folder.</p>
+          </li>
+          <li>
+            <h3>Analyze your music folder</h3>
+            <p>Launch LoudBatch, choose the folder that contains your music files, and start the analysis. All subfolders are included.</p>
+          </li>
+          <li>
+            <h3>A CSV is created</h3>
+            <p><code>volume_gains.csv</code> is created directly inside the folder you chose. If you stop partway, the results so far are kept.</p>
+          </li>
+          <li>
+            <h3>Import it on Android</h3>
+            <p>Copy the CSV to your Android device and import it into CarDSPMusicPlayer. Songs are matched by file name, and the gain values take effect immediately.</p>
+          </li>
+        </ol>
+        <p class="lb-note">The LoudBatch app itself is currently in Japanese only.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <span class="kicker">Output</span>
+          <h2>The exported CSV</h2>
+          <p>LoudBatch never writes to your music files. All results are saved to a separate CSV file (UTF-8).</p>
+        </div>
+        <div class="lb-csv">
+          <table>
+            <thead>
+              <tr>
+                <th>file_name</th><th>artist</th><th>duration_sec</th><th>measured_lufs</th><th>true_peak_dbfs</th><th>gain_db</th><th>status</th><th>leading_silence_sec</th><th>trailing_silence_sec</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>02 Groove On.m4a</td><td>Al Turner</td><td class="n">282.0</td><td class="n">−23.1</td><td class="n">−1.2</td><td class="n hl">+5.1</td><td>ok</td><td class="n">0.3</td><td class="n">1.8</td></tr>
+              <tr><td>01 Marmalade Groove.mp3</td><td>Tatsuro Yamashita</td><td class="n">231.4</td><td class="n">−15.8</td><td class="n">−0.4</td><td class="n hl">−2.2</td><td>ok</td><td class="n">0</td><td class="n">2.4</td></tr>
+              <tr><td>corrupt.mp3</td><td></td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td><td class="err">error:decode_failed</td><td class="n">0</td><td class="n">0</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="lb-note">
+          <code>gain_db</code> is the gain for each song (target − measured, limited to ±12 dB). The length of silence at the start and end of each song is also recorded and used by "Trim silence between songs".
+          A file that can't be read doesn't stop the whole run; only that row is marked <code>error</code>. The actual CSV also has columns for the relative path and the title.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <span class="kicker">Specs</span>
+          <h2>Specifications</h2>
+        </div>
+        <dl class="lb-spec">
+          <div><dt>Formats</dt><dd>MP3 / AAC (M4A) / ALAC / FLAC / WAV / AIFF / Ogg Vorbis / Opus / WavPack</dd></div>
+          <div><dt>Measurement</dt><dd>Integrated Loudness per ITU-R BS.1770 / EBU R128</dd></div>
+          <div><dt>Target level</dt><dd><span class="num">−18 LUFS</span> (adjustable)</dd></div>
+          <div><dt>Gain limit</dt><dd><span class="num">±12 dB</span> (adjustable)</dd></div>
+          <div><dt>Re-runs</dt><dd>Unchanged songs are skipped; only added or updated songs are analyzed</dd></div>
+          <div><dt>Music files</dt><dd>Read-only. No conversion, moving, or tag writing</dd></div>
+          <div><dt>Requirements</dt><dd>macOS 14 Sonoma or later (Apple silicon / Intel)</dd></div>
+          <div><dt>Security</dt><dd>Notarized by Apple. Opens right after download</dd></div>
+        </dl>
+        <div class="lb-scale-ref">
+          <span><b>−23 LUFS</b>Broadcast standard (EBU R128)</span>
+          <span><b>−18 LUFS</b>LoudBatch default</span>
+          <span><b>−14 LUFS</b>Typical for major streaming services</span>
+        </div>
+
+        <div class="callout lb-license">
+          <strong>Open source software</strong><br>
+          LoudBatch uses <a href="https://ffmpeg.org" target="_blank" rel="noopener">FFmpeg</a> for audio analysis.
+          FFmpeg is distributed under the GNU Lesser General Public License (LGPL) version 2.1 or later.
+          The bundled FFmpeg 9.0.1 is built from the unmodified official source (<a href="https://ffmpeg.org/releases/ffmpeg-9.0.1.tar.xz" target="_blank" rel="noopener">ffmpeg-9.0.1.tar.xz</a>),
+          and the full license text and build configuration are included in the app at <code>Contents/Resources/licenses</code>.
+        </div>
+
+        <div class="info-grid">
+          <div class="item">
+            <div class="label">Requirements</div>
+            <div class="value">macOS 14 or later</div>
+          </div>
+          <div class="item">
+            <div class="label">Price</div>
+            <div class="value">Free</div>
+          </div>
+          <div class="item">
+            <div class="label">Works with</div>
+            <div class="value"><a href="../../cardspmusicplayer-android/en/">CarDSPMusicPlayer (Android)</a></div>
+          </div>
+          <div class="item">
+            <div class="label">Developer</div>
+            <div class="value">YOH-TECH Corp.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="copyright">&copy; 2026 YOH-TECH Corp. All rights reserved.</div>
+      <div class="footer-links">
+        <a href="../../../en/">Home</a>
+        <a href="../../en/">All support pages</a>
+        <a href="../../cardspmusicplayer-android/en/">CarDSPMusicPlayer (Android)</a>
+        <a href="../" lang="ja" hreflang="ja">日本語</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../../../assets/js/main.js"></script>
+  <script>
+    // Example gains toward a −18 LUFS target. The −30 to −6 LUFS scale maps to 0–100%.
+    (() => {
+      const TARGET = -18, MIN = -30, MAX = -6, CLAMP = 12;
+      const tracks = [
+        { title: "Groove On", artist: "Al Turner", lufs: -23.1 },
+        { title: "Marmalade Groove", artist: "Tatsuro Yamashita", lufs: -15.8 },
+        { title: "Old CD rip", artist: "Example", lufs: -26.4 },
+        { title: "Recent remaster", artist: "Example", lufs: -9.7 },
+        { title: "Live recording", artist: "Example", lufs: -19.6 },
+      ];
+      const pos = v => ((Math.min(Math.max(v, MIN), MAX) - MIN) / (MAX - MIN)) * 100;
+      const fmt = v => (v > 0 ? "+" : v < 0 ? "−" : "±") + Math.abs(v).toFixed(1);
+      const rows = document.getElementById("lb-rows");
+      for (const t of tracks) {
+        const gain = Math.max(-CLAMP, Math.min(CLAMP, TARGET - t.lufs));
+        const dir = gain >= 0 ? "up" : "down";
+        const a = pos(t.lufs), b = pos(t.lufs + gain);
+        const row = document.createElement("div");
+        row.className = "lb-row";
+        row.innerHTML = `
+          <div class="name">${t.title}<small>${t.artist}</small></div>
+          <div class="lb-bar" title="Measured ${fmt(t.lufs)} LUFS → gain ${fmt(gain)} dB">
+            <div class="fill" style="width:${a}%"></div>
+            <div class="shift ${dir}" style="left:${Math.min(a, b)}%;width:${Math.abs(b - a)}%"></div>
+            <div class="line" style="left:calc(${pos(TARGET)}% - 1px)"></div>
+            <span class="gain ${dir}">${fmt(gain)} dB</span>
+          </div>`;
+        rows.appendChild(row);
+      }
+    })();
+  </script>
+  <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "929501862b9c499aae48912f42ecf68f"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
